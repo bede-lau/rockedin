@@ -6,12 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "verify:request": "tsx scripts/verify-request-body.ts",
+    "verify:state": "tsx scripts/verify-state.ts",
+    "verify:qwen": "tsx scripts/verify-qwen-routing.ts",
+    "verify": "npm run lint && npm run typecheck && npm run verify:request && npm run verify:state && npm run verify:qwen"
   },
   "dependencies": {
+    "lucide-react": "^1.26.0",
     "next": "16.2.11",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -19,9 +26,14 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "^9",
+    "eslint": "^9.39.5",
     "eslint-config-next": "16.2.11",
     "tailwindcss": "^4",
+    "tsx": "^4.23.1",
     "typescript": "^5"
+  },
+  "overrides": {
+    "postcss": "8.5.23",
+    "sharp": "0.35.3"
   }
 }
