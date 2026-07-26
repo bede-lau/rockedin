@@ -2,7 +2,7 @@
 
 ## Source of truth
 - Status: Active
-- Last refreshed: 2026-07-25
+- Last refreshed: 2026-07-26
 - Primary product surfaces: RockedIN dashboard, camera capture, image upload, generated career post, agent receipt.
 - Evidence reviewed: `README.md`, `src/components/RockedInApp.tsx`, `src/components/CameraCapture.tsx`, `src/app/globals.css`, `public/logo/`.
 
@@ -41,7 +41,7 @@
 
 ## Components
 - Existing components to reuse: `CameraCapture`, `primary-button`, `secondary-button`, `icon-button`, and native dialog semantics.
-- New/changed components: Shared `SectionEyebrow`, sample gallery trigger, and sample image dialog inside `CameraCapture`.
+- New/changed components: Shared `SectionEyebrow`, sample gallery trigger, sample image dialog, and native-aspect preview frame inside `CameraCapture`.
 - Variants and states: Empty/disabled, open, loading a sample, selected preview, load error, mobile full-width trigger.
 - Token/component ownership: Continue using variables and component classes in `src/app/globals.css`.
 
@@ -54,7 +54,7 @@
 
 ## Responsive behavior
 - Supported breakpoints/devices: Existing desktop dashboard, two-column tablet, and single-column layout below 800px.
-- Layout adaptations: The center workflow keeps more horizontal space than the profile rail; tertiary sample trigger is icon-only on desktop and labeled/full-width on mobile; gallery reduces columns on narrow screens.
+- Layout adaptations: The center workflow keeps more horizontal space than the profile rail; the preview frame follows the live camera or selected image aspect ratio and centers within the available capture slot without cropping; tertiary sample trigger is icon-only on desktop and labeled/full-width on mobile; gallery reduces columns on narrow screens.
 - Touch/hover differences: Minimum 44px touch targets and no hover-only instructions.
 
 ## Interaction states

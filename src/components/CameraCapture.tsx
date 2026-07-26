@@ -17,6 +17,7 @@ import {
 } from "@/lib/image";
 import { SectionEyebrow } from "@/components/SectionEyebrow";
 import {
+  type CSSProperties,
   useCallback,
   useEffect,
   useRef,
@@ -29,6 +30,7 @@ const PIPELINE_STEPS = [
   "Writing corporate humblebrag",
   "Updating living profile",
 ];
+const DEFAULT_MEDIA_ASPECT_RATIO = 16 / 9;
 
 type CameraStatus = "initializing" | "live" | "denied" | "unavailable";
 
@@ -63,6 +65,29 @@ export function CameraCapture({
   const [sampleLoading, setSampleLoading] = useState<string>();
   const [sampleError, setSampleError] = useState<string>();
   const [localError, setLocalError] = useState<string>();
+  const [mediaAspectRatio, setMediaAspectRatio] = useState(
+    DEFAULT_MEDIA_ASPECT_RATIO,
+  );
+
+  const updateMediaAspectRatio = useCallback((width: number, height: number) => {
+    if (width <= 0 || height <= 0) {
+      return;
+    }
+
+    const nextAspectRatio = width / height;
+    setMediaAspectRatio((currentAspectRatio) =>
+      Math.abs(currentAspectRatio - nextAspectRatio) < 0.001
+        ? currentAspectRatio
+        : nextAspectRatio,
+    );
+  }, []);
+
+  const syncVideoAspectRatio = useCallback(() => {
+    const video = videoRef.current;
+    if (video) {
+      updateMediaAspectRatio(video.videoWidth, video.videoHeight);
+    }
+  }, [updateMediaAspectRatio]);
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -92,6 +117,7 @@ export function CameraCapture({
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
+        syncVideoAspectRatio();
       }
       setStatus("live");
     } catch (error) {
@@ -101,7 +127,7 @@ export function CameraCapture({
           error.name === "PermissionDeniedError");
       setStatus(denied ? "denied" : "unavailable");
     }
-  }, [stopCamera]);
+  }, [stopCamera, syncVideoAspectRatio]);
 
   useEffect(() => {
     queueMicrotask(() => void startCamera());
@@ -117,6 +143,12 @@ export function CameraCapture({
       sampleDialogRef.current.showModal();
     }
   }, [samplePickerOpen]);
+
+  useEffect(() => {
+    if (!selectedImage) {
+      syncVideoAspectRatio();
+    }
+  }, [selectedImage, syncVideoAspectRatio]);
 
   const closeSamplePicker = () => {
     sampleDialogRef.current?.close();
@@ -180,6 +212,9 @@ export function CameraCapture({
   };
 
   const visibleImage = selectedImage;
+  const cameraFrameStyle = {
+    "--camera-aspect-ratio": mediaAspectRatio,
+  } as CSSProperties;
 
   return (
     <section className="camera-surface" aria-labelledby="capture-heading">
@@ -198,39 +233,52 @@ export function CameraCapture({
         </div>
       </div>
 
-      <div className="camera-frame">
-        <video
-          ref={videoRef}
-          className={visibleImage ? "camera-video camera-video-hidden" : "camera-video"}
-          autoPlay
-          muted
-          playsInline
-          aria-label="Live camera preview"
-        />
-        {visibleImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={visibleImage}
-            alt="Captured scene ready for RockedIN Agent"
-            className="captured-preview"
+      <div className="camera-frame-slot">
+        <div className="camera-frame" style={cameraFrameStyle}>
+          <video
+            ref={videoRef}
+            className={
+              visibleImage
+                ? "camera-video camera-video-hidden"
+                : "camera-video"
+            }
+            autoPlay
+            muted
+            playsInline
+            aria-label="Live camera preview"
+            onLoadedMetadata={syncVideoAspectRatio}
           />
-        ) : null}
+          {visibleImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={visibleImage}
+              alt="Captured scene ready for RockedIN Agent"
+              className="captured-preview"
+              onLoad={(event) =>
+                updateMediaAspectRatio(
+                  event.currentTarget.naturalWidth,
+                  event.currentTarget.naturalHeight,
+                )
+              }
+            />
+          ) : null}
 
-        {!visibleImage && status !== "live" ? (
-          <div className="camera-empty">
-            <ScanSearch aria-hidden="true" />
-            <strong>
-              {status === "denied"
-                ? "Camera permission is blocked"
-                : status === "unavailable"
-                  ? "Camera is unavailable"
-                  : "Opening the camera"}
-            </strong>
-            <span>
-              Upload remains available and follows the same live Qwen workflow.
-            </span>
-          </div>
-        ) : null}
+          {!visibleImage && status !== "live" ? (
+            <div className="camera-empty">
+              <ScanSearch aria-hidden="true" />
+              <strong>
+                {status === "denied"
+                  ? "Camera permission is blocked"
+                  : status === "unavailable"
+                    ? "Camera is unavailable"
+                    : "Opening the camera"}
+              </strong>
+              <span>
+                Upload remains available and follows the same live Qwen workflow.
+              </span>
+            </div>
+          ) : null}
+        </div>
       </div>
 
       {busy ? (
