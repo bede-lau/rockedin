@@ -821,7 +821,7 @@ button:disabled {
   font-size: 23px;
   font-weight: 800;
   line-height: 1.05;
-  overflow-wrap: normal;
+  overflow-wrap: anywhere;
   word-break: normal;
 }
 
@@ -2053,8 +2053,28 @@ button:disabled {
   .app-header {
     height: auto;
     min-height: 72px;
-    align-items: flex-start;
-    padding-block: 12px;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .brand-lockup {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .brand-logo-frame {
+    width: min(220px, 100%);
+  }
+
+  .brand-lockup p {
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .header-right {
+    flex: 0 0 44px;
+    gap: 0;
   }
 
   .agent-online,
@@ -2069,13 +2089,35 @@ button:disabled {
   }
 
   .center-column {
-    min-height: 800px;
+    width: 100%;
+    min-height: 0;
+    order: 1;
+    grid-template-rows: auto auto;
+  }
+
+  .profile-surface {
+    width: 100%;
+    order: 2;
+  }
+
+  .agent-surface {
+    width: 100%;
+    order: 3;
   }
 
   .profile-surface,
   .agent-surface,
-  .agent-content {
+  .agent-content,
+  .post-surface {
     overflow: visible;
+  }
+
+  .camera-surface {
+    grid-template-rows: auto auto auto auto;
+  }
+
+  .camera-frame-slot {
+    height: clamp(180px, 56vw, 320px);
   }
 
   .capture-controls {
@@ -2104,6 +2146,45 @@ button:disabled {
     display: inline;
   }
 
+  .profile-photo-edit-button {
+    min-height: 44px;
+    font-size: 11px;
+  }
+
+  .profile-name-edit {
+    width: 44px;
+    height: 44px;
+    margin: -8px 0 0;
+  }
+
+  .profile-name-edit svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .profile-name-editor {
+    grid-template-columns: minmax(0, 1fr) 44px 44px;
+  }
+
+  .profile-name-editor input {
+    height: 44px;
+    grid-column: 1 / -1;
+    font-size: 16px;
+  }
+
+  .profile-name-action {
+    width: 44px;
+    height: 44px;
+  }
+
+  .profile-name-save {
+    grid-column: 2;
+  }
+
+  .profile-name-action:last-child {
+    grid-column: 3;
+  }
+
   .sample-picker-dialog {
     width: calc(100vw - 20px);
     max-height: calc(100vh - 20px);
@@ -2130,6 +2211,21 @@ button:disabled {
     align-items: flex-end;
     flex-direction: column;
     gap: 5px;
+  }
+
+  .post-preview-trigger {
+    min-height: 44px;
+  }
+
+  .career-ladder li {
+    font-size: 10px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  .metric span {
+    font-size: 10px;
+    line-height: 1.2;
   }
 
   .post-preview-backdrop {
@@ -2167,6 +2263,56 @@ button:disabled {
 
   .finale-dialog > h2 {
     font-size: 38px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    gap: 10px;
+    padding: 8px;
+  }
+
+  .profile-title {
+    font-size: 20px;
+  }
+
+  .profile-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-facts div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 5px;
+  }
+
+  .profile-facts div + div {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .profile-facts dt {
+    font-size: 10px;
+  }
+
+  .profile-facts dd {
+    margin: 0;
+    text-align: right;
+  }
+
+  .career-ladder,
+  .agent-pipeline {
+    grid-template-columns: 1fr;
+  }
+
+  .finale-dialog {
+    padding: 22px 16px;
+  }
+
+  .finale-dialog > h2 {
+    font-size: 30px;
   }
 }
 
