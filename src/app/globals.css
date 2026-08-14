@@ -71,7 +71,6 @@ button:focus-visible,
 .brand-lockup,
 .header-right,
 .agent-online,
-.qwen-lockup,
 .header-metrics,
 .section-heading-row,
 .receipt-status,
@@ -136,26 +135,6 @@ button:focus-visible,
 .agent-online svg {
   width: 18px;
   height: 18px;
-}
-
-.qwen-lockup {
-  min-width: 0;
-  gap: 8px;
-  border-left: 1px solid var(--line);
-  padding-left: 14px;
-}
-
-.qwen-lockup img {
-  width: 84px;
-  height: 26px;
-  object-fit: contain;
-}
-
-.qwen-lockup span {
-  color: var(--muted);
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 10px;
-  white-space: nowrap;
 }
 
 .header-metrics {
@@ -2012,9 +1991,6 @@ button:disabled {
     display: none;
   }
 
-  .qwen-lockup span {
-    display: none;
-  }
 }
 
 @media (max-width: 1179px) {
@@ -2077,8 +2053,7 @@ button:disabled {
     gap: 0;
   }
 
-  .agent-online,
-  .qwen-lockup {
+  .agent-online {
     display: none;
   }
 

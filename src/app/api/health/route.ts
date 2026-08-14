@@ -37,7 +37,7 @@ export async function POST() {
         ok: false,
         error: {
           code: "UNKNOWN",
-          message: "OpenAI health check failed unexpectedly.",
+          message: "The service health check failed unexpectedly.",
           retryable: false,
         },
       },

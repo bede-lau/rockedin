@@ -274,7 +274,7 @@ export function CameraCapture({
                     : "Opening the camera"}
               </strong>
               <span>
-                Upload remains available and follows the same live OpenAI workflow.
+                Upload remains available and follows the same live workflow.
               </span>
             </div>
           ) : null}

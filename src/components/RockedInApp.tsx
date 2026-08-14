@@ -72,14 +72,12 @@ interface UiError {
 
 interface HealthState {
   status: "idle" | "checking" | "connected" | "error";
-  model?: string;
   latencyMs?: number;
   checkedAt?: string;
   message?: string;
 }
 
 const formatNumber = new Intl.NumberFormat("en-US");
-const DEFAULT_SCENE_MODEL = "gpt-5.6-luna";
 const AGENT_REQUEST_TIMEOUT_MS = 125_000;
 const HEALTH_REQUEST_TIMEOUT_MS = 35_000;
 
@@ -96,10 +94,6 @@ async function fetchWithTimeout(
   } finally {
     window.clearTimeout(timeout);
   }
-}
-
-function formatModelName(model: string) {
-  return model.split("/").at(-1) ?? model;
 }
 
 function formatHealthTime(checkedAt?: string) {
@@ -571,7 +565,7 @@ export function RockedInApp({
           });
           setHealth({
             status: "error",
-            message: "OpenAI returned an unreadable response.",
+            message: "The live service returned an unreadable response.",
           });
           return;
         }
@@ -595,13 +589,12 @@ export function RockedInApp({
           });
           setHealth({
             status: "error",
-            message: "OpenAI returned the wrong workflow response.",
+            message: "The live service returned the wrong workflow response.",
           });
           return;
         }
         setHealth({
           status: "connected",
-          model: parsed.data.model,
           latencyMs: parsed.data.latencyMs,
           checkedAt: new Date().toISOString(),
         });
@@ -705,7 +698,7 @@ export function RockedInApp({
           message:
             parsed.success && !parsed.data.ok
               ? parsed.data.error.message
-              : "OpenAI returned an unreadable human review.",
+              : "The live service returned an unreadable human review.",
         });
         return;
       }
@@ -717,7 +710,7 @@ export function RockedInApp({
         });
         setHealth({
           status: "error",
-          message: "OpenAI returned the wrong workflow response.",
+          message: "The live service returned the wrong workflow response.",
         });
         return;
       }
@@ -730,7 +723,6 @@ export function RockedInApp({
       });
       setHealth({
         status: "connected",
-        model: parsed.data.model,
         latencyMs: parsed.data.latencyMs,
         checkedAt: now,
       });
@@ -771,7 +763,7 @@ export function RockedInApp({
       if (!parsed.success) {
         setHealth({
           status: "error",
-          message: "OpenAI health response could not be parsed.",
+          message: "The service check response could not be parsed.",
         });
       } else if (!parsed.data.ok) {
         setHealth({
@@ -781,7 +773,6 @@ export function RockedInApp({
       } else {
         setHealth({
           status: "connected",
-          model: `${formatModelName(parsed.data.models.scene)} + ${formatModelName(parsed.data.models.humanReview)}`,
           latencyMs: parsed.data.latencyMs,
           checkedAt: parsed.data.checkedAt,
         });
@@ -885,7 +876,7 @@ export function RockedInApp({
     health.status === "connected"
       ? "RockedIN Agent Online"
       : health.status === "checking"
-        ? "Checking OpenAI"
+        ? "Checking service"
         : health.status === "error"
           ? "Agent offline"
           : "Agent ready";
@@ -927,9 +918,6 @@ export function RockedInApp({
               <Activity aria-hidden="true" />
             )}
             <span>{agentStatusLabel}</span>
-          </div>
-          <div className="qwen-lockup">
-            <span>OpenAI / GPT-5.6 Luna</span>
           </div>
           <div className="header-metrics" aria-label="RockedIN metrics">
             <div className="header-metric">
@@ -1279,7 +1267,7 @@ export function RockedInApp({
               <SectionTitle
                 eyebrow="ROCKEDIN AGENT"
                 icon={Cpu}
-                title="Live OpenAI call receipt."
+                title="Live call receipt."
               />
               <div
                 className={`receipt-status${
@@ -1295,9 +1283,6 @@ export function RockedInApp({
                         ? "Stored prior result"
                         : "Ready for scene"}
                   </strong>
-                  <span>
-                    {formatModelName(receipt?.model ?? DEFAULT_SCENE_MODEL)}
-                  </span>
                 </div>
                 {receipt?.latencyMs !== undefined ? (
                   <span className="latency">
@@ -1453,7 +1438,7 @@ export function RockedInApp({
                 onClick={() => void testHealth()}
               >
                 <Activity aria-hidden="true" />
-                {health.status === "checking" ? "Testing..." : "Test OpenAI"}
+                {health.status === "checking" ? "Testing..." : "Test service"}
               </button>
               <button
                 className="utility-button"
@@ -1470,7 +1455,7 @@ export function RockedInApp({
             >
               <span aria-hidden="true" />
               {health.status === "connected"
-                ? `${health.model} · ${health.latencyMs}ms · ${formatHealthTime(health.checkedAt)}`
+                ? `${health.latencyMs}ms · ${formatHealthTime(health.checkedAt)}`
                 : health.status === "error"
                   ? health.message
                   : "Health check not run"}
