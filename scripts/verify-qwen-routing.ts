@@ -83,6 +83,33 @@ assert.equal(
 );
 assert.equal(modelStudioUs.model, "qwen3.7-max");
 
+const openAi = resolveQwenConfig(
+  {
+    QWEN_PROVIDER: "openai",
+    OPENAI_API_KEY: "test-key",
+  },
+  "scene",
+);
+assert.equal(openAi.provider, "openai");
+assert.equal(openAi.model, "gpt-5.6-luna");
+assert.equal(
+  openAi.endpoint,
+  "https://api.openai.com/v1/chat/completions",
+);
+assert.equal(openAi.jsonMode, "response_format");
+assert.equal(openAi.sendThinkingControl, false);
+
+const openAiReview = resolveQwenConfig(
+  {
+    OPENAI_API_KEY: "test-key",
+    QWEN_SCENE_MODEL: "gpt-5.6-luna",
+    QWEN_REVIEW_MODEL: "gpt-5.6-luna",
+  },
+  "human_review",
+);
+assert.equal(openAiReview.provider, "openai");
+assert.equal(openAiReview.model, "gpt-5.6-luna");
+
 assert.throws(
   () => resolveQwenConfig({}, "scene"),
   (error) => error instanceof QwenConfigurationError,
@@ -161,5 +188,5 @@ assert.throws(
 );
 
 console.log(
-  "Qwen routing verification passed: provider tuples, model purposes, HTTPS endpoints, output limits, and thinking controls are valid.",
+  "Provider routing verification passed: provider tuples, model purposes, HTTPS endpoints, output limits, and thinking controls are valid.",
 );

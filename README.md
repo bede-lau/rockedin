@@ -2,61 +2,38 @@
 
 RockedIN is a Next.js demo that turns photos of Batu Bin Granite into an evolving corporate career.
 
-## Qwen model routing
+## OpenAI model routing
 
-- `Qwen-Ambassador/Qwen3.7-Plus` handles photo understanding and structured scene events.
-- `Qwen-Ambassador/Qwen3.7-Max` writes the one-off "Review My Human" finale.
-- Both models use the OpenAI-compatible Chat Completions contract.
-- Provider, credential, endpoint, and model IDs are validated as one tuple so ModelScope and Model Studio settings cannot be mixed accidentally.
+- `gpt-5.6-luna` handles both photo understanding / structured scene events and the one-off "Review My Human" finale.
+- The app uses the OpenAI Chat Completions contract with JSON mode enabled.
+- Provider, credential, endpoint, and model IDs are validated as one tuple so supported provider settings cannot be mixed accidentally.
 - Responses have purpose-specific token ceilings, provider deadlines, JSON validation, and one bounded repair attempt.
 
-The exact ModelScope scene and review payloads, including an uploaded JPEG, were live-tested successfully on July 25, 2026.
+The scene and review paths remain separately configurable, so they can be split later if needed.
 
 ## Environment
 
 Copy `.env.example` to `.env.local` and set the private credential.
 
-### ModelScope
+### OpenAI
 
 This is the configuration currently used by the demo:
 
 ```env
-QWEN_PROVIDER=modelscope
-MODELSCOPE_API_TOKEN=
-QWEN_BASE_URL=https://api-inference.modelscope.ai/v1
-QWEN_SCENE_MODEL=Qwen-Ambassador/Qwen3.7-Plus
-QWEN_REVIEW_MODEL=Qwen-Ambassador/Qwen3.7-Max
-QWEN_JSON_MODE=prompt_only
-QWEN_SEND_THINKING_CONTROL=true
-QWEN_SCENE_TIMEOUT_MS=60000
-QWEN_REVIEW_TIMEOUT_MS=30000
-QWEN_SCENE_MAX_OUTPUT_TOKENS=2048
-QWEN_REVIEW_MAX_OUTPUT_TOKENS=1024
-```
-
-ModelScope API-Inference is a best-effort service without a production SLA. It is suitable when occasional provider downtime or exhausted credits are acceptable.
-
-If ModelScope returns an account-binding error, complete the requested account setup in ModelScope before retrying.
-
-### Alibaba Cloud Model Studio
-
-For a provider-backed production service, use the matching Model Studio tuple:
-
-```env
-QWEN_PROVIDER=model_studio
-DASHSCOPE_API_KEY=
-QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
-QWEN_SCENE_MODEL=qwen3.7-plus
-QWEN_REVIEW_MODEL=qwen3.7-max
+QWEN_PROVIDER=openai
+OPENAI_API_KEY=
+QWEN_BASE_URL=https://api.openai.com/v1
+QWEN_SCENE_MODEL=gpt-5.6-luna
+QWEN_REVIEW_MODEL=gpt-5.6-luna
 QWEN_JSON_MODE=response_format
-QWEN_SEND_THINKING_CONTROL=true
+QWEN_SEND_THINKING_CONTROL=false
 QWEN_SCENE_TIMEOUT_MS=60000
 QWEN_REVIEW_TIMEOUT_MS=30000
 QWEN_SCENE_MAX_OUTPUT_TOKENS=2048
 QWEN_REVIEW_MAX_OUTPUT_TOKENS=1024
 ```
 
-Use a workspace-specific regional endpoint when one is available for the deployment. The credential is read only by server routes. Never prefix it with `NEXT_PUBLIC_`.
+ModelScope and Alibaba Cloud Model Studio remain available as alternatives in `.env.example`. The credential is read only by server routes. Never prefix it with `NEXT_PUBLIC_`.
 
 Scene interpretation is open-ended: the canonical rock jokes are examples,
 not a whitelist. Any readable scene containing Batu can create a new generated
@@ -69,7 +46,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000 and use **Test Qwen** to verify both models before the demo.
+Open http://localhost:3000 and use **Test OpenAI** to verify both model paths before the demo.
 
 ## Deployment
 

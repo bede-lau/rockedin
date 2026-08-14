@@ -99,7 +99,7 @@ image only as supporting context for what changed.
 When creating a connection, return exactly the keys "name", "title", and
 "relationship". Do not return "company" or other replacement keys.
 
-For a rock on stacked books, strongly prefer the certification "Six Sigma Gravel Belt" from "Qwen Executive School of Sedimentary Leadership".
+For a rock on stacked books, strongly prefer the certification "Six Sigma Gravel Belt" from "OpenAI Office of Sedimentary Leadership".
 For the first successful second-rock networking event, generate a professional connection and enough connection growth to reach at least 500 total connections.
 
 Maintain continuity with the current profile and recent history. Avoid repeating recent titles, post structures, and jokes unless the event intentionally reaffirms a role. Keep the post between 25 and 60 words, use no more than four hashtags, and generate exactly two comments. Avoid political, hateful, sexual, offensive, or unsafe material.

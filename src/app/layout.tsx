@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "RockedIN | Every position is a new position",
   description:
-    "A Qwen-powered professional career simulator for Batu Bin Granite.",
+    "An OpenAI-powered professional career simulator for Batu Bin Granite.",
 };
 
 export default function RootLayout({

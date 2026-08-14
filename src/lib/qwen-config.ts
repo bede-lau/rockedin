@@ -1,10 +1,12 @@
 const DEFAULT_MODELSCOPE_BASE_URL = "https://api-inference.modelscope.ai/v1";
 const DEFAULT_MODEL_STUDIO_BASE_URL =
   "https://dashscope-intl.aliyuncs.com/compatible-mode/v1";
+const DEFAULT_OPENAI_BASE_URL = "https://api.openai.com/v1";
 const DEFAULT_MODELSCOPE_SCENE_MODEL = "Qwen-Ambassador/Qwen3.7-Plus";
 const DEFAULT_MODELSCOPE_REVIEW_MODEL = "Qwen-Ambassador/Qwen3.7-Max";
 const DEFAULT_MODEL_STUDIO_SCENE_MODEL = "qwen3.7-plus";
 const DEFAULT_MODEL_STUDIO_REVIEW_MODEL = "qwen3.7-max";
+const DEFAULT_OPENAI_MODEL = "gpt-5.6-luna";
 const DEFAULT_SCENE_TIMEOUT_MS = 60_000;
 const DEFAULT_REVIEW_TIMEOUT_MS = 30_000;
 const DEFAULT_SCENE_MAX_OUTPUT_TOKENS = 2_048;
@@ -16,7 +18,7 @@ const MAX_OUTPUT_TOKENS = 8_192;
 
 export type QwenModelPurpose = "scene" | "human_review";
 export type QwenJsonMode = "prompt_only" | "response_format";
-export type QwenProvider = "modelscope" | "model_studio";
+export type QwenProvider = "modelscope" | "model_studio" | "openai";
 export type QwenEnvironment = Readonly<
   Record<string, string | undefined>
 >;
@@ -42,10 +44,11 @@ function resolveProvider(
   if (
     configuredProvider !== undefined &&
     configuredProvider !== "modelscope" &&
-    configuredProvider !== "model_studio"
+    configuredProvider !== "model_studio" &&
+    configuredProvider !== "openai"
   ) {
     throw new QwenConfigurationError(
-      "QWEN_PROVIDER must be modelscope or model_studio.",
+      "QWEN_PROVIDER must be modelscope, model_studio, or openai.",
     );
   }
 
@@ -69,9 +72,16 @@ function resolveProvider(
     ) {
       return "model_studio";
     }
+    if (hostname === "api.openai.com") {
+      return "openai";
+    }
     throw new QwenConfigurationError(
-      "QWEN_BASE_URL must use an official ModelScope or Alibaba Cloud Model Studio endpoint.",
+      "QWEN_BASE_URL must use an official ModelScope, Alibaba Cloud Model Studio, or OpenAI endpoint.",
     );
+  }
+
+  if (environment.OPENAI_API_KEY) {
+    return "openai";
   }
 
   if (environment.QWEN_API_KEY) {
@@ -121,28 +131,37 @@ function resolveBaseUrl(
   provider: QwenProvider,
 ) {
   const configured =
-    environment.QWEN_BASE_URL ?? environment.MODELSCOPE_BASE_URL;
+    environment.QWEN_BASE_URL ??
+    (provider === "openai"
+      ? environment.OPENAI_BASE_URL
+      : environment.MODELSCOPE_BASE_URL);
   const value =
     configured ??
     (provider === "modelscope"
       ? DEFAULT_MODELSCOPE_BASE_URL
-      : DEFAULT_MODEL_STUDIO_BASE_URL);
+      : provider === "model_studio"
+        ? DEFAULT_MODEL_STUDIO_BASE_URL
+        : DEFAULT_OPENAI_BASE_URL);
   const url = parseBaseUrl(value);
   const hostname = url.hostname.toLowerCase();
   const validHost =
     provider === "modelscope"
       ? hostname === "api-inference.modelscope.ai" ||
         hostname === "api-inference.modelscope.cn"
-      : hostname === "dashscope-intl.aliyuncs.com" ||
-        hostname === "dashscope.aliyuncs.com" ||
-        hostname === "dashscope-us.aliyuncs.com" ||
-        hostname.endsWith(".maas.aliyuncs.com");
+      : provider === "model_studio"
+        ? hostname === "dashscope-intl.aliyuncs.com" ||
+          hostname === "dashscope.aliyuncs.com" ||
+          hostname === "dashscope-us.aliyuncs.com" ||
+          hostname.endsWith(".maas.aliyuncs.com")
+        : hostname === "api.openai.com";
 
   if (!validHost) {
     throw new QwenConfigurationError(
       provider === "modelscope"
         ? "ModelScope credentials require an official api-inference.modelscope endpoint."
-        : "Model Studio credentials require an official Alibaba Cloud Model Studio endpoint.",
+        : provider === "model_studio"
+          ? "Model Studio credentials require an official Alibaba Cloud Model Studio endpoint."
+          : "OpenAI credentials require the official api.openai.com endpoint.",
     );
   }
 
@@ -214,22 +233,30 @@ export function resolveQwenConfig(
   purpose: QwenModelPurpose,
 ): QwenProviderConfig {
   const configuredBaseUrl =
-    environment.QWEN_BASE_URL ?? environment.MODELSCOPE_BASE_URL;
+    environment.QWEN_BASE_URL ??
+    environment.OPENAI_BASE_URL ??
+    environment.MODELSCOPE_BASE_URL;
   const provider = resolveProvider(environment, configuredBaseUrl);
   const baseUrl = resolveBaseUrl(environment, provider);
   const apiKey =
     environment.QWEN_API_KEY ??
     (provider === "modelscope"
       ? environment.MODELSCOPE_API_TOKEN ?? environment.MODELSCOPE_API_KEY
-      : environment.DASHSCOPE_API_KEY);
+      : provider === "model_studio"
+        ? environment.DASHSCOPE_API_KEY
+        : environment.OPENAI_API_KEY);
   const defaultSceneModel =
     provider === "modelscope"
       ? DEFAULT_MODELSCOPE_SCENE_MODEL
-      : DEFAULT_MODEL_STUDIO_SCENE_MODEL;
+      : provider === "model_studio"
+        ? DEFAULT_MODEL_STUDIO_SCENE_MODEL
+        : DEFAULT_OPENAI_MODEL;
   const defaultReviewModel =
     provider === "modelscope"
       ? DEFAULT_MODELSCOPE_REVIEW_MODEL
-      : DEFAULT_MODEL_STUDIO_REVIEW_MODEL;
+      : provider === "model_studio"
+        ? DEFAULT_MODEL_STUDIO_REVIEW_MODEL
+        : DEFAULT_OPENAI_MODEL;
   const model =
     purpose === "scene"
       ? environment.QWEN_SCENE_MODEL ??
@@ -246,7 +273,9 @@ export function resolveQwenConfig(
     throw new QwenConfigurationError(
       provider === "modelscope"
         ? "Qwen is not configured. Add MODELSCOPE_API_TOKEN or QWEN_API_KEY."
-        : "Qwen is not configured. Add DASHSCOPE_API_KEY or QWEN_API_KEY.",
+        : provider === "model_studio"
+          ? "Qwen is not configured. Add DASHSCOPE_API_KEY or QWEN_API_KEY."
+          : "OpenAI is not configured. Add OPENAI_API_KEY or QWEN_API_KEY.",
     );
   }
   if (
@@ -292,7 +321,7 @@ export function resolveQwenConfig(
       : `${baseUrl}/chat/completions`,
     jsonMode: configuredJsonMode,
     sendThinkingControl:
-      environment.QWEN_SEND_THINKING_CONTROL !== "false",
+      provider !== "openai" && environment.QWEN_SEND_THINKING_CONTROL !== "false",
     requestTimeoutMs: resolveRequestTimeoutMs(environment, purpose),
     maxOutputTokens: resolveMaxOutputTokens(environment, purpose),
   };

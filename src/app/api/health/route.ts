@@ -37,7 +37,7 @@ export async function POST() {
         ok: false,
         error: {
           code: "UNKNOWN",
-          message: "Qwen health check failed unexpectedly.",
+          message: "OpenAI health check failed unexpectedly.",
           retryable: false,
         },
       },

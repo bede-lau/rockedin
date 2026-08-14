@@ -79,7 +79,7 @@ interface HealthState {
 }
 
 const formatNumber = new Intl.NumberFormat("en-US");
-const DEFAULT_SCENE_MODEL = "Qwen3.7-Plus";
+const DEFAULT_SCENE_MODEL = "gpt-5.6-luna";
 const AGENT_REQUEST_TIMEOUT_MS = 125_000;
 const HEALTH_REQUEST_TIMEOUT_MS = 35_000;
 
@@ -571,7 +571,7 @@ export function RockedInApp({
           });
           setHealth({
             status: "error",
-            message: "Qwen returned an unreadable response.",
+            message: "OpenAI returned an unreadable response.",
           });
           return;
         }
@@ -595,7 +595,7 @@ export function RockedInApp({
           });
           setHealth({
             status: "error",
-            message: "Qwen returned the wrong workflow response.",
+            message: "OpenAI returned the wrong workflow response.",
           });
           return;
         }
@@ -705,7 +705,7 @@ export function RockedInApp({
           message:
             parsed.success && !parsed.data.ok
               ? parsed.data.error.message
-              : "Qwen returned an unreadable human review.",
+              : "OpenAI returned an unreadable human review.",
         });
         return;
       }
@@ -717,7 +717,7 @@ export function RockedInApp({
         });
         setHealth({
           status: "error",
-          message: "Qwen returned the wrong workflow response.",
+          message: "OpenAI returned the wrong workflow response.",
         });
         return;
       }
@@ -771,7 +771,7 @@ export function RockedInApp({
       if (!parsed.success) {
         setHealth({
           status: "error",
-          message: "Qwen health response could not be parsed.",
+          message: "OpenAI health response could not be parsed.",
         });
       } else if (!parsed.data.ok) {
         setHealth({
@@ -885,7 +885,7 @@ export function RockedInApp({
     health.status === "connected"
       ? "RockedIN Agent Online"
       : health.status === "checking"
-        ? "Checking Qwen"
+        ? "Checking OpenAI"
         : health.status === "error"
           ? "Agent offline"
           : "Agent ready";
@@ -929,14 +929,7 @@ export function RockedInApp({
             <span>{agentStatusLabel}</span>
           </div>
           <div className="qwen-lockup">
-            <Image
-              src="/qwen-logo.jpg"
-              alt="Qwen"
-              width={96}
-              height={30}
-              priority
-            />
-            <span>Plus vision / Max finale</span>
+            <span>OpenAI / GPT-5.6 Luna</span>
           </div>
           <div className="header-metrics" aria-label="RockedIN metrics">
             <div className="header-metric">
@@ -1286,7 +1279,7 @@ export function RockedInApp({
               <SectionTitle
                 eyebrow="ROCKEDIN AGENT"
                 icon={Cpu}
-                title="Live Qwen call receipt."
+                title="Live OpenAI call receipt."
               />
               <div
                 className={`receipt-status${
@@ -1460,7 +1453,7 @@ export function RockedInApp({
                 onClick={() => void testHealth()}
               >
                 <Activity aria-hidden="true" />
-                {health.status === "checking" ? "Testing..." : "Test Qwen"}
+                {health.status === "checking" ? "Testing..." : "Test OpenAI"}
               </button>
               <button
                 className="utility-button"

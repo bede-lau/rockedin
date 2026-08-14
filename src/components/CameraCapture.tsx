@@ -274,7 +274,7 @@ export function CameraCapture({
                     : "Opening the camera"}
               </strong>
               <span>
-                Upload remains available and follows the same live Qwen workflow.
+                Upload remains available and follows the same live OpenAI workflow.
               </span>
             </div>
           ) : null}

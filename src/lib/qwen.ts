@@ -115,7 +115,7 @@ function getConfig(purpose: QwenModelPurpose) {
     }
     throw new AgentServiceError(
       "QWEN_CONFIG",
-      "Qwen configuration could not be loaded.",
+      "AI provider configuration could not be loaded.",
       false,
       503,
     );
@@ -162,7 +162,7 @@ function parseJson(text: string) {
   } catch {
     throw new AgentServiceError(
       "QWEN_INVALID_JSON",
-      "Qwen returned an invalid structured response.",
+      "The AI provider returned an invalid structured response.",
       true,
       502,
     );
@@ -173,8 +173,8 @@ function timeoutError(purpose: QwenModelPurpose) {
   return new AgentServiceError(
     "QWEN_TIMEOUT",
     purpose === "scene"
-      ? "Qwen took too long to inspect this scene. The existing career was preserved; retry the image once."
-      : "Qwen took too long to complete the human review. Retry once.",
+      ? "The AI provider took too long to inspect this scene. The existing career was preserved; retry the image once."
+      : "The AI provider took too long to complete the human review. Retry once.",
     true,
     504,
   );
@@ -208,7 +208,7 @@ async function providerCallOnce(
 
     if (!response.ok) {
       const providerMessage = await readProviderError(response);
-      console.warn("Qwen provider request failed.", {
+      console.warn("AI provider request failed.", {
         purpose,
         model: config.model,
         status: response.status,
@@ -222,7 +222,7 @@ async function providerCallOnce(
           "QWEN_AUTH",
           needsAlibabaBinding
             ? "ModelScope requires this account to be linked to Alibaba Cloud before the Qwen credits can be used."
-            : "Qwen rejected the configured credentials or model access.",
+            : "The AI provider rejected the configured credentials or model access.",
           false,
           503,
         );
@@ -230,7 +230,7 @@ async function providerCallOnce(
       if (response.status === 429) {
         throw new AgentServiceError(
           "QWEN_RATE_LIMIT",
-          "ModelScope reached the request limit for this Qwen model. Wait before retrying or switch the configured model.",
+          "The AI provider reached its request limit. Wait before retrying or switch the configured model.",
           true,
           429,
         );
@@ -238,8 +238,8 @@ async function providerCallOnce(
       throw new AgentServiceError(
         "QWEN_PROVIDER",
         response.status >= 500
-          ? "Qwen is temporarily unavailable. Retry in a moment."
-          : "Qwen rejected this request. Check the configured model and try again.",
+          ? "The AI provider is temporarily unavailable. Retry in a moment."
+          : "The AI provider rejected this request. Check the configured model and try again.",
         response.status === 429 || response.status >= 500,
         response.status >= 500 ? 503 : 502,
       );
@@ -251,7 +251,7 @@ async function providerCallOnce(
     } catch {
       throw new AgentServiceError(
         "QWEN_SCHEMA_MISMATCH",
-        "Qwen returned an unreadable provider response.",
+        "The AI provider returned an unreadable response.",
         true,
         502,
       );
@@ -261,7 +261,7 @@ async function providerCallOnce(
     if (!provider.success) {
       throw new AgentServiceError(
         "QWEN_SCHEMA_MISMATCH",
-        "Qwen returned an unexpected provider response.",
+        "The AI provider returned an unexpected response.",
         true,
         502,
       );
@@ -280,7 +280,7 @@ async function providerCallOnce(
     }
     throw new AgentServiceError(
       "QWEN_NETWORK",
-      "Unable to reach Qwen. Check the network and try again.",
+      "Unable to reach the AI provider. Check the network and try again.",
       true,
       503,
     );
@@ -300,16 +300,25 @@ async function providerCall(
   } = {},
 ) {
   const config = getConfig(purpose);
+  const maxOutputTokens = options.maxOutputTokens ?? config.maxOutputTokens;
   const body = {
     model: config.model,
     messages,
-    temperature,
-    max_tokens: options.maxOutputTokens ?? config.maxOutputTokens,
     stream: false,
-    ...(config.jsonMode === "response_format"
-      ? { response_format: { type: "json_object" } }
-      : {}),
-    ...(config.sendThinkingControl ? { enable_thinking: false } : {}),
+    ...(config.provider === "openai"
+      ? {
+          max_completion_tokens: maxOutputTokens,
+          reasoning_effort: "low",
+          response_format: { type: "json_object" },
+        }
+      : {
+          temperature,
+          max_tokens: maxOutputTokens,
+          ...(config.jsonMode === "response_format"
+            ? { response_format: { type: "json_object" } }
+            : {}),
+          ...(config.sendThinkingControl ? { enable_thinking: false } : {}),
+        }),
   };
 
   const attempts = options.allowTransportRetry === false ? 1 : 2;
@@ -419,7 +428,7 @@ ${previousResponse}`,
       if (!result.success) {
         throw new AgentServiceError(
           "QWEN_SCHEMA_MISMATCH",
-          "Qwen returned a career event that did not match the required schema.",
+          "The AI provider returned a career event that did not match the required schema.",
           true,
           502,
         );
@@ -490,7 +499,7 @@ export async function runHumanReview(
       if (!result.success) {
         throw new AgentServiceError(
           "QWEN_SCHEMA_MISMATCH",
-          "Qwen returned a human review that did not match the required schema.",
+          "The AI provider returned a human review that did not match the required schema.",
           true,
           502,
         );
@@ -546,7 +555,7 @@ export async function runHealthCheck() {
     if (!result.success) {
       throw new AgentServiceError(
         "QWEN_SCHEMA_MISMATCH",
-        "Qwen health check returned an unexpected response.",
+        "The AI provider health check returned an unexpected response.",
         true,
         502,
       );
