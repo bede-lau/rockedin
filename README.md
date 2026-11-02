@@ -1,7 +1,7 @@
 <p align="center"><img src="public/logo/rockedin-logo.png" width="480" alt="RockedIn" /></p>
 
 <p align="center">
-  <b>🏆 3rd place · Qwen Brainrot Hackathon</b>
+  <b>🏆 3rd place · Qwen Brainrot Hackathon, Kuala Lumpur</b>
 </p>
 
 <p align="center">
@@ -69,11 +69,21 @@ The client waits up to 125 seconds, the same cap as the agent route. While it wa
 
 State is saved in `localStorage` under `rockedin-demo-state-v1`. Saved posts drop their image data. A saved receipt is marked `live: false`, so a reload says "Stored prior result".
 
+## ▍Project gallery
+
+<table><tr>
+<td width="50%"><img src="https://raw.githubusercontent.com/bede-lau/bede-lau.github.io/main/assets/img/rockedin/rockedin_1.png" alt="rockedin project screenshot, first view" /></td>
+<td width="50%"><img src="https://raw.githubusercontent.com/bede-lau/bede-lau.github.io/main/assets/img/rockedin/rockedin_2.png" alt="rockedin project screenshot, second view" /></td>
+</tr></table>
+
+<sub>Images from the [project portfolio](https://bede-lau.github.io/); they may depict an earlier build.</sub>
+
+
 ## ▍The demo
 
 The deployed app is [https://rockedin.onrender.com](https://rockedin.onrender.com).
 
-This repository has no screenshots of the interface. It does have four sample photos. The home page lists `public/sample-images` from disk, in alphabetical order, and turns each filename into the button label. They are inputs. The repo does not store the model's reading of them.
+The `main` branch has no committed screenshots of the interface; the portfolio gallery above may show an earlier build. It does have four sample photos. The home page lists `public/sample-images` from disk, in alphabetical order, and turns each filename into the button label. They are inputs. The repo does not store the model's reading of them.
 
 <table>
   <tr>
