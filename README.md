@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<h1 align="center">🪨 RockedIn</h1>
+<p align="center">🏆 <b>3rd place · Qwen Brainrot Hackathon, Kuala Lumpur</b><br/><sub><a href="https://my.linkedin.com/in/yu-hang-chok-5ab0b4298">Award announcement</a></sub></p>
+<p align="center"><b>LinkedIn, but for rocks.</b><br/><sub>Professional networking reaches a new geological era.</sub></p>
 
-## Getting Started
+## ▍The project
 
-First, run the development server:
+RockedIn is a satirical professional network for rocks, built for the Qwen Brainrot Hackathon. The project placed third; the pitch came with actual rocks.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+> **Repository status:** the current default branch contains the untouched Next.js starter, not the award-winning application's implementation. The project description above describes the hackathon entry; the setup and architecture below describe the code currently in this repository.
+
+## ▍What is in this repository
+
+```mermaid
+flowchart LR
+  A["Browser"] --> B["Next.js App Router"]
+  B --> C["src/app/layout.tsx<br/>fonts + root layout"]
+  B --> D["src/app/page.tsx<br/>starter landing page"]
+  C --> E["src/app/globals.css<br/>Tailwind CSS"]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Layer | Current implementation |
+| --- | --- |
+| Framework | Next.js 16 App Router, React 19, TypeScript |
+| Styling | Tailwind CSS 4 and Geist fonts |
+| Application | Default starter screen; no rock profiles, feed, backend, or AI integration is present on this branch |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ▍Run locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```sh
+npm ci
+npm run dev
+```
 
-## Learn More
+Open [localhost:3000](http://localhost:3000). Use `npm run lint` for linting and `npm run build` to create a production build.
 
-To learn more about Next.js, take a look at the following resources:
+## ▍Repository map
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```text
+src/app/page.tsx     Starter page
+src/app/layout.tsx   Root layout and font configuration
+src/app/globals.css  Global styles
+public/              Default static assets
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The actual hackathon build may live elsewhere; this branch is not evidence of its feature set or deployment architecture.
