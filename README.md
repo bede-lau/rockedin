@@ -16,7 +16,7 @@
 
 RockedIn is a satirical professional network for rocks, built for the Qwen Brainrot Hackathon. The project placed third; the pitch came with actual rocks.
 
-> **Repository status:** the current default branch contains the untouched Next.js starter, not the award-winning application's implementation. The project description above describes the hackathon entry; the setup and architecture below describe the code currently in this repository.
+> **Repository status:** this default `master` branch contains a Next.js starter. The RockedIN application and its setup live on the [`main` branch](https://github.com/bede-lau/rockedin/tree/main). The architecture and commands below describe `master`.
 
 ## ▍What is in this repository
 
@@ -52,4 +52,4 @@ src/app/globals.css  Global styles
 public/              Default static assets
 ```
 
-The actual hackathon build may live elsewhere; this branch is not evidence of its feature set or deployment architecture.
+For the RockedIN application's code, integrations and run instructions, switch to [`main`](https://github.com/bede-lau/rockedin/tree/main).
